@@ -325,6 +325,81 @@ If you are using Windows, you can download and extract `RVC-beta.7z` to use RVC 
 
 There's also a tutorial on RVC in Chinese and you can check it out if needed.
 
+
+---
+
+# Voice Conversion CLI Application
+
+This script provides an interface for performing voice conversions. It can be executed directly via terminal or interacted with using the OSC (Open Sound Control) protocol.
+
+## Prerequisites
+
+1. Ensure you have Python 3.x installed.
+2. Required libraries:
+    - `pythonosc`: To support OSC mode.
+    - Other dependencies as required by the main code (like `logging`, `json`, etc.)
+    
+   Install them using:
+   ```
+   pip install pythonosc
+   ```
+
+## Usage
+
+### 1. Terminal Mode
+
+To execute the script directly from the terminal:
+
+```bash
+python infer-cli.py --model [PATH_TO_MODEL] --model-index [PATH_TO_MODEL_INDEX] --input-file [PATH_TO_INPUT_AUDIO] --output-file [PATH_TO_OUTPUT_AUDIO] [OTHER_OPTIONS]
+```
+
+#### Required Flags:
+- `--model`: Specifies the path to the model file.
+- `--model-index`: Specifies the path to the model index file.
+- `--input-file`: Specifies the path to the input audio file.
+- `--output-file`: Specifies where the processed audio file will be saved.
+
+#### Optional Flags:
+- `--hubert`: Path to the Hubert model (default is `models/hubert_base.pt`).
+- `--quality`: Adjusts the quality level (default is 1).
+- `--f0-up-key`: Adjusts the F0 up key value (default is 0).
+- `--f0-method`: Specifies the F0 determination method. Choices are 'pm', 'harvest', 'crepe', 'crepe-tiny' (default is 'pm').
+- `--buffer-size`: Adjusts the buffering size in milliseconds (default is 1000 ms).
+- `--analyze`: Instructs the script to analyze the input audio file.
+
+### 2. OSC Mode
+
+To run the script in OSC mode:
+
+```bash
+python infer-cli.py --use-osc [OTHER_OPTIONS]
+```
+
+In OSC mode, the application listens for incoming OSC commands, allowing for remote triggering and interaction.
+
+**Note**: Ensure your OSC client sends the appropriate commands and data as required by the script's OSC handler functions.
+
+## Examples
+
+1. **Terminal Execution**:
+```bash
+python voice_conversion_cli.py --model path/to/model/file --model-index path/to/model/index --input-file path/to/input/audio.wav --output-file path/to/output/audio.wav --quality 2 --f0-up-key 1 --analyze
+```
+
+2. **Using OSC Mode**:
+```bash
+python voice_conversion_cli.py --use-osc
+```
+
+Ensure your OSC client software or script sends the appropriate messages to control the voice conversion process.
+
+## Additional Notes
+
+- When not using the OSC mode, the `--model`, `--input-file`, and `--output-file` flags are mandatory.
+- The default server IP and port for OSC mode in the script are `127.0.0.1` and `6666`. Ensure your OSC client sends messages to these addresses unless modified in the script.
+
+
 ## Credits
 + [ContentVec](https://github.com/auspicious3000/contentvec/)
 + [VITS](https://github.com/jaywalnut310/vits)
