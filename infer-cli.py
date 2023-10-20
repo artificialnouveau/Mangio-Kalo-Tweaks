@@ -23,8 +23,8 @@ import soundfile as sf
 import numpy as np
 import torch
 from tqdm import tqdm
-from rvc_eval.vc_infer_pipeline import VC
-from rvc_eval.model import load_hubert, load_net_g
+# from rvc_eval.vc_infer_pipeline import VC
+# from rvc_eval.model import load_hubert, load_net_g
 
 sys.path.append(os.path.dirname(__file__))
 from speech_analysis import analyze_audio
