@@ -150,6 +150,8 @@ def start_rvc_process():
 
 def send_to_rvc(args):
     global rvc_process
+    logger.info(f"Sending command to RVC: {command_str}")
+
     if rvc_process:
         # Construct the command string to send to the Mangio-RVC-Fork v2 CLI App
         command_str = (f"{args.model} {args.input_file} {args.output_file} "
@@ -158,6 +160,7 @@ def send_to_rvc(args):
         # Send the command to the process
         rvc_process.stdin.write(command_str)
         rvc_process.stdin.flush()
+        logger.info(f"Sending command to RVC: {command_str}")
 
         # Optionally: Wait and read the output, if required
         while True:
