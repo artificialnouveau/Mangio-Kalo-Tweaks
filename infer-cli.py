@@ -146,11 +146,10 @@ def start_rvc_process():
         while True:
             line = rvc_process.stdout.readline()
             if "You are currently in 'HOME':" in line:
+                # Once we get the HOME prompt, send the "go infer" command
+                rvc_process.stdin.write("go infer\n")
+                rvc_process.stdin.flush()
                 break
-
-        # Send 'go infer' to enter infer mode
-        rvc_process.stdin.write("go infer\n")
-        rvc_process.stdin.flush()
 
         # Wait for "INFER:" prompt
         while True:
@@ -162,11 +161,8 @@ def send_to_rvc(args):
     global rvc_process
     if rvc_process:
         # Construct the command string to send to the Mangio-RVC-Fork v2 CLI App
-        command_str = (f"{args.model} {args.model_index} {args.input_file} {args.output_file}"
-                       f"{args.feature_index_file_path} {args.speaker_id} {args.transposition} "
-                       f"{args.f0_method} {args.crepe_hop_length} {args.harvest_median_filter_radius} "
-                       f"{args.post_resample_rate} {args.mix_volume_envelope} {args.feature_index_ratio} "
-                       f"{args.vc_protection}\n")
+        command_str = (f"{args.model} {args.input_file} {args.output_file} "
+                       f"{args.model_index} 0 0 harvest 160 3 0 1 0.95 0.33\n")
 
         # Send the command to the process
         rvc_process.stdin.write(command_str)
@@ -177,6 +173,7 @@ def send_to_rvc(args):
             line = rvc_process.stdout.readline()
             if "some expected output line" in line:  # Replace with actual expected end line if any
                 break
+
 
 def main(args):
     try:
