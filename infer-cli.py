@@ -134,8 +134,8 @@ def start_rvc_process():
                     rvc_process.stdin.write("go infer\n")
                     rvc_process.stdin.flush()
                 elif "INFER:" in line:
+                    print("Awaiting OSC commands...")
                     break
-
 
         # Wait for "INFER:" prompt
         while True:
