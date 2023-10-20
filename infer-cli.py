@@ -23,16 +23,10 @@ import soundfile as sf
 import numpy as np
 import torch
 from tqdm import tqdm
-# from rvc_eval.vc_infer_pipeline import VC
-# from rvc_eval.model import load_hubert, load_net_g
-
-# sys.path.append(os.path.dirname(__file__))
-# from speech_analysis import analyze_audio
-
-# sys.path.append(os.path.join(os.path.dirname(__file__), "..\\rvc\\"))
 
 # Assuming global logger and parser configurations
 logger = getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
 def print_handler(address, *args):
     print(f"Received message from {address}: {args}")
@@ -51,7 +45,6 @@ parser.add_argument("--quality", "-q", type=int, default=1, help="Quality level 
 parser.add_argument("--f0-up-key", "-k", type=int, default=0, help="F0 up key value")
 parser.add_argument("--f0-method", type=str, default="pm", choices=("pm", "harvest", "crepe", "crepe-tiny"), help="Method for F0 determination")
 parser.add_argument("--buffer-size", type=int, default=1000, help="Buffering size in ms")
-# parser.add_argument("--analyze", action="store_true", help="Analyze the input audio file")
 
 
 def set_all_paths(address, args_string, analyze=False):  # 'analyze' parameter is retained
@@ -135,12 +128,14 @@ def start_rvc_process():
 
         # Wait until the welcome message appears
         while True:
-            line = rvc_process.stdout.readline()
-            if "You are currently in 'HOME':" in line:
-                # Once we get the HOME prompt, send the "go infer" command
-                rvc_process.stdin.write("go infer\n")
-                rvc_process.stdin.flush()
-                break
+            for line in iter(rvc_process.stdout.readline, ''):
+                print(line, end='')
+                if "You are currently in 'HOME':" in line:
+                    rvc_process.stdin.write("go infer\n")
+                    rvc_process.stdin.flush()
+                elif "INFER:" in line:
+                    break
+
 
         # Wait for "INFER:" prompt
         while True:
@@ -149,28 +144,35 @@ def start_rvc_process():
                 break
 
 def send_to_rvc(args):
-    global rvc_process
-    logger.info(f"Sending command to RVC: {command_str}")
-
-    if rvc_process:
-        # Construct the command string to send to the Mangio-RVC-Fork v2 CLI App
-        command_str = (f"{args.model} {args.input_file} {args.output_file} "
-                       f"{args.model_index} 0 0 harvest 160 3 0 1 0.95 0.33\n")
-
-        # Send the command to the process
-        rvc_process.stdin.write(command_str)
-        rvc_process.stdin.flush()
+    try:
+        global rvc_process
+        print("Entered send_to_rvc function.")
         logger.info(f"Sending command to RVC: {command_str}")
-
-        # Optionally: Wait and read the output, if required
-        while True:
-            line = rvc_process.stdout.readline()
-            if "some expected output line" in line:  # Replace with actual expected end line if any
-                break
+    
+        if rvc_process:
+            # Construct the command string to send to the Mangio-RVC-Fork v2 CLI App
+            command_str = (f"{args.model} {args.input_file} {args.output_file} "
+                           f"{args.model_index} 0 0 harvest 160 3 0 1 0.95 0.33\n")
+    
+            # Send the command to the process
+            rvc_process.stdin.write(command_str)
+            rvc_process.stdin.flush()
+            logger.info(f"Sending command to RVC: {command_str}")
+    
+            # Optionally: Wait and read the output, if required
+            while True:
+                line = rvc_process.stdout.readline()
+                if "some expected output line" in line:  # Replace with actual expected end line if any
+                    break
+    except Exception as e:
+        logger.error(f"An error occurred: {e}")
+        traceback.print_exc()
 
 
 if __name__ == "__main__":
+    print("Starting the RVC process...")
     start_rvc_process()  # Start the RVC process immediately
+    print("RVC process started.")
 
     args = parser.parse_args()
     logger.setLevel(args.log_level)
@@ -186,9 +188,11 @@ if __name__ == "__main__":
 
     # Check if OSC mode is active
     if args.use_osc:
+        print("Running in OSC mode.")
         run_osc_server(args)
     else:
+        print("Running in non-OSC mode.")
         if not args.model or not args.input_file or not args.output_file:
-            print("When not using OSC mode, -m/--model, --input-file, and --output-file are required.")
+            print("Required arguments missing for non-OSC mode.")
             sys.exit(1)
         send_to_rvc(args)
