@@ -141,6 +141,7 @@ def start_rvc_process():
         while True:
             line = rvc_process.stdout.readline()
             if "INFER:" in line:
+                print("Awaiting OSC commands...")
                 break
 
 def send_to_rvc(args):
