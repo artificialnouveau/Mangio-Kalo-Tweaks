@@ -94,7 +94,6 @@ def set_all_paths(address, args_string, analyze=False):  # 'analyze' parameter i
     except IndexError:
         print("Incorrect sequence of arguments received. Expecting input_path, followed by alternating model_path and output_path.")
 
-
 def run_osc_server(args):
     disp = Dispatcher()
     disp.map("/max2py", set_all_paths)  # One OSC address to set all paths
@@ -105,14 +104,6 @@ def run_osc_server(args):
     def handle_requests():
         while True:
             server.handle_request()
-            
-            # Send to the Mangio-RVC subprocess for each model, input, and output path
-            for model_path, model_index_path, input_path, output_path in zip(osc_args["models"], osc_args["models_index"], osc_args["input_files"], osc_args["output_files"]):
-                args.model = model_path.replace('"', '')
-                args.model_index = model_index_path.replace('"', '')
-                args.input_file = input_path.replace('"', '')
-                args.output_file = output_path.replace('"', '')
-                send_to_rvc(args)
 
     # Run the server in a separate thread
     thread = Thread(target=handle_requests)
@@ -175,57 +166,13 @@ def send_to_rvc(args):
                 break
 
 
-def main(args):
-    try:
-        logger.info("Starting main function...")
-        
-        # Assuming you have some function called process_file
-        # that does something with the input file
-        if args.input_file:
-            result = process_file(args.input_file)
-            logger.info(f"Processed file with result: {result}")
-        
-        # Send OSC command only if --use-osc argument is provided
-        if args.use_osc:
-            # Create a client to send OSC messages
-            sender = udp_client.SimpleUDPClient("127.0.0.1", 6666) # Remote: 192.168.2.110
-            
-            _out = args.output_file
-            _mod = args.model
-            _modidx = args.model_index
-            
-            message = 'output file: ' + _out + ' with ' + _mod + ' is done.'
-            sender.send_message("/py2max/gen_done", message)
-
-            # Construct and send the OSC command for Mangio-RVC-Fork v2
-            infer_command = f"{_mod} {args.input_file} {_out} logs/{_modidx} 0 0 harvest 160 3 0 1 0.95 0.33 False False False"
-            sender.send_message("/py2max/infer", infer_command)
-
-        # If not using OSC, use subprocess to run the Mangio-RVC-Fork v2 CLI command
-        else:
-            import subprocess
-            
-            infer_command = [
-                "python", "infer-web.py", "--pycmd", "python", "--is_cli",
-                _mod, args.input_file, _out,
-                f"logs/{_modidx}",
-                "0", "0", "harvest", "160", "3", "0", "1", "0.95", "0.33", "False", "False", "False"
-            ]
-            subprocess.run(infer_command)
-    
-    except Exception as e:
-        logger.error(f"Error encountered: {e}")
-        sys.exit(1)
-
-    logger.info("Main function completed successfully!")
-
-
 if __name__ == "__main__":
-    start_rvc_process()
+    start_rvc_process()  # Start the RVC process immediately
 
     args = parser.parse_args()
     logger.setLevel(args.log_level)
 
+    # Check the analyze flag and process accordingly
     if args.analyze:
         if not args.input_file and not args.use_osc:
             print("The --input-file option is required for analysis when not using OSC mode.")
@@ -234,6 +181,7 @@ if __name__ == "__main__":
             json_result = analyze_audio(args.input_file)
             print(f"Analysis saved in: {json_result}")
 
+    # Check if OSC mode is active
     if args.use_osc:
         run_osc_server(args)
     else:
@@ -241,25 +189,3 @@ if __name__ == "__main__":
             print("When not using OSC mode, -m/--model, --input-file, and --output-file are required.")
             sys.exit(1)
         send_to_rvc(args)
-
-    args = parser.parse_args()
-    logger.setLevel(args.log_level)
-
-    if args.analyze:
-        if not args.input_file and not args.use_osc:
-            print("The --input-file option is required for analysis when not using OSC mode.")
-            sys.exit(1)
-        if args.input_file:
-            json_result = analyze_audio(args.input_file)
-            print(f"Analysis saved in: {json_result}")
-
-    if not args.use_osc:
-        if not args.model or not args.input_file or not args.output_file:
-            print("When not using OSC mode, -m/--model, --input-file, and --output-file are required.")
-            sys.exit(1)
-        send_to_rvc(args)
-    else:
-        if not args.model or not args.input_file or not args.output_file:
-            print("When not using OSC mode, -m/--model, --input-file, and --output-file are required.")
-            sys.exit(1)
-        main(args)
