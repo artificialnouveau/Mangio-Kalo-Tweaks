@@ -26,10 +26,10 @@ from tqdm import tqdm
 # from rvc_eval.vc_infer_pipeline import VC
 # from rvc_eval.model import load_hubert, load_net_g
 
-sys.path.append(os.path.dirname(__file__))
-from speech_analysis import analyze_audio
+# sys.path.append(os.path.dirname(__file__))
+# from speech_analysis import analyze_audio
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "..\\rvc\\"))
+# sys.path.append(os.path.join(os.path.dirname(__file__), "..\\rvc\\"))
 
 # Assuming global logger and parser configurations
 logger = getLogger(__name__)
@@ -51,10 +51,10 @@ parser.add_argument("--quality", "-q", type=int, default=1, help="Quality level 
 parser.add_argument("--f0-up-key", "-k", type=int, default=0, help="F0 up key value")
 parser.add_argument("--f0-method", type=str, default="pm", choices=("pm", "harvest", "crepe", "crepe-tiny"), help="Method for F0 determination")
 parser.add_argument("--buffer-size", type=int, default=1000, help="Buffering size in ms")
-parser.add_argument("--analyze", action="store_true", help="Analyze the input audio file")
+# parser.add_argument("--analyze", action="store_true", help="Analyze the input audio file")
 
 
-def set_all_paths(address, args_string, analyze=True):  # 'analyze' parameter is retained
+def set_all_paths(address, args_string, analyze=False):  # 'analyze' parameter is retained
     global osc_args
     if args_string.startswith("'") and args_string.endswith("'"):
         args_string = args_string[1:-1]
