@@ -75,10 +75,10 @@ def set_all_paths(address, args_string, analyze=False):
         input_filename = os.path.basename(input_file)
 
         # Check if the input file exists in the ./audio/input_audio folder
-        input_audio_destination = os.path.join("./audio/input_audio", input_filename)
+        input_audio_destination = os.path.join("./audios/input_audio", input_filename)
         if not os.path.exists(input_audio_destination):
-            if not os.path.exists('./audio/input_audio'):
-                os.makedirs('./audio/input_audio')
+            if not os.path.exists('./audios/input_audio'):
+                os.makedirs('./audios/input_audio')
             shutil.copy(input_file, input_audio_destination)
         
         # For the remaining paths, order is: model_folder, output1, model_folder, output2, ...
@@ -129,7 +129,7 @@ def set_all_paths(address, args_string, analyze=False):
             # Create a dummy args object for the send_to_rvc function
             osc_command = argparse.Namespace()
             osc_command.model = model_name  # Only the model name as input for the model argument
-            osc_command.input_file = input_files[idx]
+            osc_command.input_file = "input_audio/"+os.path.basename(input_files[idx])
             osc_command.output_file = os.path.basename(output_files[idx])
             osc_command.model_index = destination_index_file_path  # Use the copied index path
             # Set default values
