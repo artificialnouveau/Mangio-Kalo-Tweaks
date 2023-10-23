@@ -48,6 +48,7 @@ parser.add_argument("--buffer-size", type=int, default=1000, help="Buffering siz
 
 
 def set_all_paths(address, args_string, analyze=False):
+    logger.info(f"Received OSC command at address {address} with arguments: {args_string}")
     global osc_args
     if args_string.startswith("'") and args_string.endswith("'"):
         args_string = args_string[1:-1]
@@ -112,6 +113,7 @@ def run_osc_server(args):
 
     server = osc_server.ThreadingOSCUDPServer(("127.0.0.1", 1111), disp)
     print(f"Serving on {server.server_address}")
+    logger.info(f"OSC server started and listening on {server.server_address}")
 
     def handle_requests():
         while True:
@@ -120,6 +122,7 @@ def run_osc_server(args):
     # Run the server in a separate thread
     thread = Thread(target=handle_requests)
     thread.start()
+
 
 def resample_audio(audio, original_sr, target_sr):
     from math import gcd
