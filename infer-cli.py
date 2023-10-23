@@ -188,16 +188,20 @@ def send_to_rvc(args):
         logger.error(f"An error occurred: {e}")
         traceback.print_exc()
 
-
+def start_rvc_process_threaded():
+    """Runs the RVC process in a separate thread."""
+    global rvc_process_thread
+    rvc_process_thread = Thread(target=start_rvc_process)
+    rvc_process_thread.start()
 
 if __name__ == "__main__":
     print("Starting the RVC process...")
-    start_rvc_process()  # Start the RVC process immediately
+    start_rvc_process_threaded()
     print("RVC process started.")
 
     args = parser.parse_args()
     logger.setLevel(args.log_level)
-
+    
     # Check the analyze flag and process accordingly
     if args.analyze:
         if not args.input_file and not args.use_osc:
