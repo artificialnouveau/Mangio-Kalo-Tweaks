@@ -8,8 +8,9 @@ from logging import getLogger
 
 import json
 
-from pythonosc import dispatcher as Dispatcher, osc_server
-from pythonosc import udp_client
+# from pythonosc import dispatcher as Dispatcher, osc_server
+from pythonosc.dispatcher import Dispatcher
+from pythonosc import udp_client, osc_server
 import traceback
 
 import time
