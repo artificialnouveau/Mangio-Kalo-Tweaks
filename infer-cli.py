@@ -47,7 +47,7 @@ parser.add_argument("--f0-method", type=str, default="pm", choices=("pm", "harve
 parser.add_argument("--buffer-size", type=int, default=1000, help="Buffering size in ms")
 
 
-def set_all_paths(address, args_string, analyze=False):  # 'analyze' parameter is retained
+def set_all_paths(address, args_string, analyze=False):
     global osc_args
     if args_string.startswith("'") and args_string.endswith("'"):
         args_string = args_string[1:-1]
@@ -65,9 +65,16 @@ def set_all_paths(address, args_string, analyze=False):  # 'analyze' parameter i
         # The first path is always input
         input_file = paths[0]
         
-        # For the remaining paths, order is: model1, output1, model2, output2, ...
+        # For the remaining paths, order is: model_folder, output1, model_folder, output2, ...
         for i in range(1, len(paths)-1, 2):
-            models.append(paths[i])
+            model_folder = paths[i]
+            # Search for .pth and .index files in the model folder
+            for file in os.listdir(model_folder):
+                if file.endswith(".pth"):
+                    models.append(os.path.join(model_folder, file))
+                elif file.endswith(".index"):
+                    models_index.append(os.path.join(model_folder, file))
+
             output_files.append(paths[i + 1])
 
         # Ensure the input_files list has the same length as models and output_files
@@ -78,14 +85,26 @@ def set_all_paths(address, args_string, analyze=False):  # 'analyze' parameter i
         osc_args["models"] = models
         osc_args["models_index"] = models_index
 
-
         print("input_files: ", osc_args["input_files"])
         print("output_files: ", osc_args["output_files"])
         print("models: ", osc_args["models"])
         print("models index: ", osc_args["models_index"])
 
+        # Now, send the information to the RVC infer app
+        for idx in range(len(models)):
+            # Create a dummy args object for the send_to_rvc function
+            osc_command = argparse.Namespace()
+            osc_command.model = models[idx]
+            osc_command.input_file = input_files[idx]
+            osc_command.output_file = output_files[idx]
+            osc_command.model_index = models_index[idx]
+            # Set default values
+            osc_command.args_defaults = "0 -2 harvest 160 3 0 1 0.95 0.33"
+            send_to_rvc(osc_command)
+
     except IndexError:
-        print("Incorrect sequence of arguments received. Expecting input_path, followed by alternating model_path and output_path.")
+        print("Incorrect sequence of arguments received. Expecting input_path, followed by alternating model_folder and output_path.")
+
 
 def run_osc_server(args):
     disp = Dispatcher()
@@ -153,7 +172,7 @@ def send_to_rvc(args):
         if rvc_process:
             # Construct the command string to send to the Mangio-RVC-Fork v2 CLI App
             command_str = (f"{args.model} {args.input_file} {args.output_file} "
-                           f"{args.model_index} 0 0 harvest 160 3 0 1 0.95 0.33\n")
+                           f"{args.model_index} {args.args_defaults}\n")
     
             # Send the command to the process
             rvc_process.stdin.write(command_str)
@@ -168,6 +187,7 @@ def send_to_rvc(args):
     except Exception as e:
         logger.error(f"An error occurred: {e}")
         traceback.print_exc()
+
 
 
 if __name__ == "__main__":
