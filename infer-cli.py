@@ -45,6 +45,7 @@ parser.add_argument("--quality", "-q", type=int, default=1, help="Quality level 
 parser.add_argument("--f0-up-key", "-k", type=int, default=0, help="F0 up key value")
 parser.add_argument("--f0-method", type=str, default="pm", choices=("pm", "harvest", "crepe", "crepe-tiny"), help="Method for F0 determination")
 parser.add_argument("--buffer-size", type=int, default=1000, help="Buffering size in ms")
+parser.add_argument("--log-level", type=str, default="INFO", choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], help="Set the logging level")
 
 
 def set_all_paths(address, args_string, analyze=False):
