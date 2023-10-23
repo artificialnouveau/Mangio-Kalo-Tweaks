@@ -97,8 +97,14 @@ def set_all_paths(address, args_string, analyze=False):
         print("models index: ", osc_args["models_index"])
 
         for idx in range(len(models)):
-            model_name = os.path.basename(models[idx]).split(".")[0]  # get the model name from the .pth file
-            log_dir = os.path.join("logs", model_name)
+            model_name = os.path.basename(models[idx])
+            model_path_in_weights = os.path.join("./weights", model_name)
+            
+            # Check if the model exists in the ./weights folder
+            if not os.path.exists(model_path_in_weights):
+                shutil.copy(models[idx], model_path_in_weights)
+
+            log_dir = os.path.join("logs", model_name.split(".")[0])  # get the model name without extension
             original_index_file_name = os.path.basename(models_index[idx])
             destination_index_file_path = os.path.join(log_dir, original_index_file_name)
     
@@ -112,7 +118,7 @@ def set_all_paths(address, args_string, analyze=False):
     
             # Create a dummy args object for the send_to_rvc function
             osc_command = argparse.Namespace()
-            osc_command.model = models[idx]
+            osc_command.model = model_name  # Only the model name as input for the model argument
             osc_command.input_file = input_files[idx]
             osc_command.output_file = os.path.basename(output_files[idx])
             osc_command.model_index = destination_index_file_path  # Use the copied index path
