@@ -200,7 +200,7 @@ if __name__ == "__main__":
     print("RVC process started.")
 
     args = parser.parse_args()
-    logger.setLevel(args.log_level)
+    logger.setLevel(getattr(logging, args.log_level))
     
     # Check the analyze flag and process accordingly
     if args.analyze:
