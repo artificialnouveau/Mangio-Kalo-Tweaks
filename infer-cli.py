@@ -52,6 +52,8 @@ parser.add_argument("--log-level", type=str, default="INFO", choices=["DEBUG", "
 def set_all_paths(address, args_string, analyze=False):
     logger.info(f"Received OSC command at address {address} with arguments: {args_string}")
     global osc_args
+    if 'osc_args' not in globals():
+        osc_args = {}
     if args_string.startswith("'") and args_string.endswith("'"):
         args_string = args_string[1:-1]
     if 'Macintosh HD:' in args_string:
