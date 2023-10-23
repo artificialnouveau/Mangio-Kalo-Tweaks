@@ -71,6 +71,16 @@ def set_all_paths(address, args_string, analyze=False):
         # The first path is always input
         input_file = paths[0]
         
+        # Extract only the filename from the input_file path
+        input_filename = os.path.basename(input_file)
+
+        # Check if the input file exists in the ./audio/input_audio folder
+        input_audio_destination = os.path.join("./audio/input_audio", input_filename)
+        if not os.path.exists(input_audio_destination):
+            if not os.path.exists('./audio/input_audio'):
+                os.makedirs('./audio/input_audio')
+            shutil.copy(input_file, input_audio_destination)
+        
         # For the remaining paths, order is: model_folder, output1, model_folder, output2, ...
         for i in range(1, len(paths)-1, 2):
             model_folder = paths[i]
@@ -84,7 +94,7 @@ def set_all_paths(address, args_string, analyze=False):
             output_files.append(paths[i + 1])
 
         # Ensure the input_files list has the same length as models and output_files
-        input_files = [input_file] * len(models)
+        input_files = [input_audio_destination] * len(models)  # Use the input from the input_audio folder
 
         osc_args["input_files"] = input_files
         osc_args["output_files"] = output_files
