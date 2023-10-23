@@ -142,11 +142,12 @@ def start_rvc_process():
     global rvc_process
     if rvc_process is None:
         rvc_process = subprocess.Popen(['python', 'infer-web.py', '--pycmd', 'python', '--is_cli'],
-                                    stdin=subprocess.PIPE,
-                                    stdout=subprocess.PIPE,
-                                    text=True,
-                                    bufsize=1,
-                                    universal_newlines=True)
+                                       stdin=subprocess.PIPE,
+                                       stdout=subprocess.PIPE,
+                                       text=True,
+                                       bufsize=1,  # <-- Enable line buffering
+                                       universal_newlines=True)
+
 
         # Wait until the welcome message appears
         while True:
