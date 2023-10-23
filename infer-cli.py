@@ -96,18 +96,6 @@ def set_all_paths(address, args_string, analyze=False):
         print("models: ", osc_args["models"])
         print("models index: ", osc_args["models_index"])
 
-        # Now, send the information to the RVC infer app
-        # for idx in range(len(models)):
-        #     # Create a dummy args object for the send_to_rvc function
-        #     osc_command = argparse.Namespace()
-        #     osc_command.model = models[idx]
-        #     osc_command.input_file = input_files[idx]
-        #     osc_command.output_file = output_files[idx]
-        #     osc_command.model_index = models_index[idx]
-        #     # Set default values
-        #     osc_command.args_defaults = "0 -2 harvest 160 3 0 1 0.95 0.33"
-        #     send_to_rvc(osc_command)
-        # Now, send the information to the RVC infer app
         for idx in range(len(models)):
             model_name = os.path.basename(models[idx]).split(".")[0]  # get the model name from the .pth file
             log_dir = os.path.join("logs", model_name)
@@ -126,7 +114,7 @@ def set_all_paths(address, args_string, analyze=False):
             osc_command = argparse.Namespace()
             osc_command.model = models[idx]
             osc_command.input_file = input_files[idx]
-            osc_command.output_file = output_files[idx]
+            osc_command.output_file = os.path.basename(output_files[idx])
             osc_command.model_index = destination_index_file_path  # Use the copied index path
             # Set default values
             osc_command.args_defaults = "0 -2 harvest 160 3 0 1 0.95 0.33"
