@@ -208,13 +208,13 @@ if __name__ == "__main__":
     logger.setLevel(getattr(logging, args.log_level))
     
     # Check the analyze flag and process accordingly
-    if args.analyze:
-        if not args.input_file and not args.use_osc:
-            print("The --input-file option is required for analysis when not using OSC mode.")
-            sys.exit(1)
-        if args.input_file:
-            json_result = analyze_audio(args.input_file)
-            print(f"Analysis saved in: {json_result}")
+    # if args.analyze:
+    #     if not args.input_file and not args.use_osc:
+    #         print("The --input-file option is required for analysis when not using OSC mode.")
+    #         sys.exit(1)
+    #     if args.input_file:
+    #         json_result = analyze_audio(args.input_file)
+    #         print(f"Analysis saved in: {json_result}")
 
     # Check if OSC mode is active
     if args.use_osc:
