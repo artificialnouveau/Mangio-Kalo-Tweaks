@@ -1,5 +1,6 @@
 import subprocess
 import sys
+import shutil
 import argparse
 from argparse import ArgumentParser
 
@@ -96,13 +97,37 @@ def set_all_paths(address, args_string, analyze=False):
         print("models index: ", osc_args["models_index"])
 
         # Now, send the information to the RVC infer app
+        # for idx in range(len(models)):
+        #     # Create a dummy args object for the send_to_rvc function
+        #     osc_command = argparse.Namespace()
+        #     osc_command.model = models[idx]
+        #     osc_command.input_file = input_files[idx]
+        #     osc_command.output_file = output_files[idx]
+        #     osc_command.model_index = models_index[idx]
+        #     # Set default values
+        #     osc_command.args_defaults = "0 -2 harvest 160 3 0 1 0.95 0.33"
+        #     send_to_rvc(osc_command)
+        # Now, send the information to the RVC infer app
         for idx in range(len(models)):
+            model_name = os.path.basename(models[idx]).split(".")[0]  # get the model name from the .pth file
+            log_dir = os.path.join("logs", model_name)
+            original_index_file_name = os.path.basename(models_index[idx])
+            destination_index_file_path = os.path.join(log_dir, original_index_file_name)
+    
+            # Check if the directory exists, if not, create it
+            if not os.path.exists(log_dir):
+                os.makedirs(log_dir)
+    
+            # Check if the destination index file exists, if not, copy the original index file to it
+            if not os.path.exists(destination_index_file_path):
+                shutil.copy(models_index[idx], destination_index_file_path)
+    
             # Create a dummy args object for the send_to_rvc function
             osc_command = argparse.Namespace()
             osc_command.model = models[idx]
             osc_command.input_file = input_files[idx]
             osc_command.output_file = output_files[idx]
-            osc_command.model_index = models_index[idx]
+            osc_command.model_index = destination_index_file_path  # Use the copied index path
             # Set default values
             osc_command.args_defaults = "0 -2 harvest 160 3 0 1 0.95 0.33"
             send_to_rvc(osc_command)
@@ -175,7 +200,6 @@ def send_to_rvc(args):
     try:
         global rvc_process
         print("Entered send_to_rvc function.")
-        logger.info(f"Sending command to RVC: {command_str}")
     
         if rvc_process:
             # Construct the command string to send to the Mangio-RVC-Fork v2 CLI App
@@ -183,6 +207,7 @@ def send_to_rvc(args):
                            f"{args.model_index} {args.args_defaults}\n")
     
             # Send the command to the process
+            logger.info(f"Sending command to RVC: {command_str}")
             rvc_process.stdin.write(command_str)
             rvc_process.stdin.flush()
             logger.info(f"Sending command to RVC: {command_str}")
