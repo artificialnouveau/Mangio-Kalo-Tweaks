@@ -185,6 +185,7 @@ def start_rvc_process():
                 break
 
 def send_to_rvc(args):
+    logger.info("Starting send_to_rvc function...")
     try:
         global rvc_process
         print("Entered send_to_rvc function.")
@@ -208,6 +209,7 @@ def send_to_rvc(args):
     except Exception as e:
         logger.error(f"An error occurred: {e}")
         traceback.print_exc()
+    logger.info("Finished send_to_rvc function.")
 
 def start_rvc_process_threaded():
     """Runs the RVC process in a separate thread."""
