@@ -75,11 +75,11 @@ def set_all_paths(address, args_string, analyze=False):
         input_filename = os.path.basename(input_file)
 
         # Check if the input file exists in the ./audio/input_audio folder
-        input_audio_destination = os.path.join("./audios/input_audio", input_filename)
-        if not os.path.exists(input_audio_destination):
-            if not os.path.exists('./audios/input_audio'):
-                os.makedirs('./audios/input_audio')
-            shutil.copy(input_file, input_audio_destination)
+        # input_audio_destination = os.path.join("./audios/input_audio", input_filename)
+        # if not os.path.exists(input_audio_destination):
+        #     if not os.path.exists('./audios/input_audio'):
+        #         os.makedirs('./audios/input_audio')
+        #     shutil.copy(input_file, input_audio_destination)
         
         # For the remaining paths, order is: model_folder, output1, model_folder, output2, ...
         for i in range(1, len(paths)-1, 2):
@@ -94,7 +94,8 @@ def set_all_paths(address, args_string, analyze=False):
             output_files.append(paths[i + 1])
 
         # Ensure the input_files list has the same length as models and output_files
-        input_files = [input_audio_destination] * len(models)  # Use the input from the input_audio folder
+        input_files = [input_filename] * len(models)
+        # input_files = [input_audio_destination] * len(models)  # Use the input from the input_audio folder
 
         osc_args["input_files"] = input_files
         osc_args["output_files"] = output_files
@@ -129,7 +130,7 @@ def set_all_paths(address, args_string, analyze=False):
             # Create a dummy args object for the send_to_rvc function
             osc_command = argparse.Namespace()
             osc_command.model = model_name  # Only the model name as input for the model argument
-            osc_command.input_file = "input_audio/"+os.path.basename(input_files[idx])
+            osc_command.input_file = input_files[idx] # "input_audio/"+os.path.basename(input_files[idx])
             osc_command.output_file = os.path.basename(output_files[idx])
             osc_command.model_index = destination_index_file_path  # Use the copied index path
             # Set default values
