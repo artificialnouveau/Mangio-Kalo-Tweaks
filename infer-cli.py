@@ -94,7 +94,7 @@ def set_all_paths(address, args_string, analyze=False):
             output_files.append(paths[i + 1])
 
         # Ensure the input_files list has the same length as models and output_files
-        input_files = [input_filename] * len(models)
+        input_files = [input_file] * len(models)
         # input_files = [input_audio_destination] * len(models)  # Use the input from the input_audio folder
 
         osc_args["input_files"] = input_files
