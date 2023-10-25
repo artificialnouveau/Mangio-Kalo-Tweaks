@@ -130,13 +130,14 @@ def load_audio(file, sr, DoFormant, Quefrency, Timbre):
                 print("couldn't remove formanted type of file")
 
         else:
-            out, _ = (
+            out, err = (
                 ffmpeg.input(file, threads=0)
                 .output("-", format="f32le", acodec="pcm_f32le", ac=1, ar=sr)
-                .run(
-                    cmd=["ffmpeg", "-nostdin"], capture_stdout=True, capture_stderr=True
-                )
+                .run(cmd=["ffmpeg", "-nostdin"], capture_stdout=True, capture_stderr=True)
             )
+            if err:
+                print("FFmpeg stderr:", err.decode('utf-8'))
+
     except Exception as e:
         print("audio file: ", file)
         raise RuntimeError(f"Failed to load audio: {e}")
