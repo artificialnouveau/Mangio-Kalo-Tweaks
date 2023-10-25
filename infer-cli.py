@@ -72,7 +72,7 @@ def set_all_paths(address, args_string, analyze=False):
         input_file = paths[0]
         
         # Extract only the filename from the input_file path
-        input_filename = os.path.basename(input_file)
+        # input_filename = os.path.basename(input_file)
 
         # Check if the input file exists in the ./audio/input_audio folder
         # input_audio_destination = os.path.join("./audios/input_audio", input_filename)
