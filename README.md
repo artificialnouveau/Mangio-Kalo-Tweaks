@@ -380,19 +380,7 @@ In OSC mode, the application listens for incoming OSC commands, allowing for rem
 
 **Note**: Ensure your OSC client sends the appropriate commands and data as required by the script's OSC handler functions.
 
-## Examples
-
-1. **Terminal Execution**:
-```bash
-python voice_conversion_cli.py --model path/to/model/file --model-index path/to/model/index --input-file path/to/input/audio.wav --output-file path/to/output/audio.wav --quality 2 --f0-up-key 1 --analyze
 ```
-
-2. **Using OSC Mode**:
-```bash
-python voice_conversion_cli.py --use-osc
-```
-
-Ensure your OSC client software or script sends the appropriate messages to control the voice conversion process.
 
 ## Additional Notes
 
