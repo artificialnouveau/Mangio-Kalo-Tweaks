@@ -35,17 +35,11 @@ def print_handler(address, *args):
 parser = ArgumentParser(description="Voice Conversion CLI Application")
 
 # Existing arguments:
-parser.add_argument("--use-osc", action="store_true", help="Run in OSC mode.")
 parser.add_argument("--model", "-m", type=str, required=False, help="Path to model file")
 parser.add_argument("--model-index", "-mi", type=str, required=False, help="Path to model index file")
 parser.add_argument("--input-file", type=str, required=False, help="Path to input audio file")
 parser.add_argument("--output-file", type=str, required=False, help="Path to save processed audio file")
-parser.add_argument("--hubert", type=str, default="models/hubert_base.pt", help="Path to Hubert model")
-parser.add_argument("--float", action="store_true", help="Use floating point precision")
-parser.add_argument("--quality", "-q", type=int, default=1, help="Quality level (default is 1)")
-parser.add_argument("--f0-up-key", "-k", type=int, default=0, help="F0 up key value")
-parser.add_argument("--f0-method", type=str, default="pm", choices=("pm", "harvest", "crepe", "crepe-tiny"), help="Method for F0 determination")
-parser.add_argument("--buffer-size", type=int, default=1000, help="Buffering size in ms")
+parser.add_argument("--use-osc", action="store_true", help="Run in OSC mode.")
 parser.add_argument("--log-level", type=str, default="INFO", choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], help="Set the logging level")
 
 
@@ -69,9 +63,7 @@ def set_all_paths(address, args_string, analyze=False):
     try:
         # The first path is always input
         input_file = paths[0]
-        
-        # For the remaining paths, order is: model_folder, output1, model_folder, output2, ...
-        for i in range(1, len(paths)-1, 2):
+        for i in range(1, len(paths) - 1, 2):
             model_folder = paths[i]
             # Search for .pth and .index files in the model folder
             for file in os.listdir(model_folder):
@@ -79,22 +71,17 @@ def set_all_paths(address, args_string, analyze=False):
                     models.append(os.path.join(model_folder, file))
                 elif file.endswith(".index"):
                     models_index.append(os.path.join(model_folder, file))
-
+    
             output_files.append(paths[i + 1])
-
-        # Ensure the input_files list has the same length as models and output_files
+    
         input_files = [input_file] * len(models)
-        # input_files = [input_audio_destination] * len(models)  # Use the input from the input_audio folder
-
-        osc_args["input_files"] = input_files
-        osc_args["output_files"] = output_files
-        osc_args["models"] = models
-        osc_args["models_index"] = models_index
-
-        print("input_files: ", osc_args["input_files"])
-        print("output_files: ", osc_args["output_files"])
-        print("models: ", osc_args["models"])
-        print("models index: ", osc_args["models_index"])
+    
+        osc_args = {
+            "input_files": input_files,
+            "output_files": output_files,
+            "models": models,
+            "models_index": models_index,
+        }
 
         for idx in range(len(models)):
             model_name = os.path.basename(models[idx])
@@ -241,16 +228,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
     logger.setLevel(getattr(logging, args.log_level))
     
-    # Check the analyze flag and process accordingly
-    # if args.analyze:
-    #     if not args.input_file and not args.use_osc:
-    #         print("The --input-file option is required for analysis when not using OSC mode.")
-    #         sys.exit(1)
-    #     if args.input_file:
-    #         json_result = analyze_audio(args.input_file)
-    #         print(f"Analysis saved in: {json_result}")
-
-    # Check if OSC mode is active
     if args.use_osc:
         print("Running in OSC mode.")
         run_osc_server(args)
