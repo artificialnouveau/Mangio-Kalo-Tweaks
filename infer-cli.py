@@ -42,6 +42,17 @@ parser.add_argument("--output-file", type=str, required=False, help="Path to sav
 parser.add_argument("--use-osc", action="store_true", help="Run in OSC mode.")
 parser.add_argument("--log-level", type=str, default="INFO", choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], help="Set the logging level")
 
+# Additional arguments:
+parser.add_argument("--speaker-id", type=int, default=0, help="Speaker ID")
+parser.add_argument("--transposition", type=int, default=0, help="Transposition")
+parser.add_argument("--f0-method", type=str, default="harvest", choices=["pm", "harvest", "crepe", "crepe-tiny"], help="F0 determination method")
+parser.add_argument("--crepe-hop-length", type=int, default=160, help="Crepe hop length")
+parser.add_argument("--harvest-median-filter-radius", type=int, default=4, help="Harvest median filter radius (0-7)")
+parser.add_argument("--post-resample-rate", type=int, default=0, help="Post-resample rate")
+parser.add_argument("--mix-volume-envelope", type=int, default=1, help="Mix volume envelope")
+parser.add_argument("--feature-index-ratio", type=float, default=0.79, help="Feature index ratio (0-1)")
+parser.add_argument("--voiceless-consonant-protection", type=float, default=0.33, help="Voiceless Consonant Protection (0-1)")
+
 
 def set_all_paths(address, args_string, analyze=False):
     logger.info(f"Received OSC command at address {address} with arguments: {args_string}")
@@ -110,7 +121,19 @@ def set_all_paths(address, args_string, analyze=False):
             osc_command.output_file = os.path.basename(output_files[idx])
             osc_command.model_index = destination_index_file_path  # Use the copied index path
             # Set default values
-            osc_command.args_defaults = "0 -2 harvest 128 3 0 1 0.95 0.33 False False" # 0.33
+            osc_command.args_defaults = " ".join([
+                str(args.speaker_id),
+                str(args.transposition),
+                args.f0_method,
+                str(args.crepe_hop_length),
+                str(args.harvest_median_filter_radius),
+                str(args.post_resample_rate),
+                str(args.mix_volume_envelope),
+                str(args.feature_index_ratio),
+                str(args.voiceless_consonant_protection),
+                "False",
+                "False"
+            ])
             send_to_rvc(osc_command)
 
     except IndexError:
