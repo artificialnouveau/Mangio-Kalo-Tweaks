@@ -9,7 +9,6 @@ from logging import getLogger
 
 import json
 
-# from pythonosc import dispatcher as Dispatcher, osc_server
 from pythonosc.dispatcher import Dispatcher
 from pythonosc import udp_client, osc_server
 import traceback
@@ -70,16 +69,6 @@ def set_all_paths(address, args_string, analyze=False):
     try:
         # The first path is always input
         input_file = paths[0]
-        
-        # Extract only the filename from the input_file path
-        # input_filename = os.path.basename(input_file)
-
-        # Check if the input file exists in the ./audio/input_audio folder
-        # input_audio_destination = os.path.join("./audios/input_audio", input_filename)
-        # if not os.path.exists(input_audio_destination):
-        #     if not os.path.exists('./audios/input_audio'):
-        #         os.makedirs('./audios/input_audio')
-        #     shutil.copy(input_file, input_audio_destination)
         
         # For the remaining paths, order is: model_folder, output1, model_folder, output2, ...
         for i in range(1, len(paths)-1, 2):
@@ -208,6 +197,15 @@ def send_to_rvc(args):
         print("Entered send_to_rvc function.")
     
         if rvc_process:
+            # Wait for the specific text to appear in the RVC process output
+            print("Waiting for RVC to be ready...")
+            while True:
+                line = rvc_process.stdout.readline()
+                print(line, end='')  # Optional: print the RVC output
+                if "INFER:" in line:
+                    print("RVC is ready. Sending OSC command...")
+                    break
+    
             # Construct the command string to send to the Mangio-RVC-Fork v2 CLI App
             command_str = (f"{args.model} {args.input_file} {args.output_file} "
                            f"{args.model_index} {args.args_defaults}\n")
@@ -216,7 +214,7 @@ def send_to_rvc(args):
             logger.info(f"Sending command to RVC: {command_str}")
             rvc_process.stdin.write(command_str)
             rvc_process.stdin.flush()
-            logger.info(f"Sending command to RVC: {command_str}")
+            logger.info("Command sent.")
     
             # Optionally: Wait and read the output, if required
             while True:
@@ -227,6 +225,7 @@ def send_to_rvc(args):
         logger.error(f"An error occurred: {e}")
         traceback.print_exc()
     logger.info("Finished send_to_rvc function.")
+
 
 def start_rvc_process_threaded():
     """Runs the RVC process in a separate thread."""
