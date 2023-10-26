@@ -3092,7 +3092,7 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Mangio-RVC-Web 💻") as app:
     #     )
 
     if config.iscolab or config.paperspace:
-        if config.is_cli:
+        if args.is_cli:  # Check if --is_cli argument is provided
             print("\n\nMangio-RVC-Fork v2 CLI App!\n")
             print(
                 "Welcome to the CLI version of RVC. Please read the documentation on https://github.com/Mangio621/Mangio-RVC-Fork (README.MD) to understand how to use this app.\n"
@@ -3107,5 +3107,6 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Mangio-RVC-Web 💻") as app:
             server_port=config.listen_port,
             quiet=False,
         )
+
 
 # endregion
