@@ -83,7 +83,8 @@ def set_all_paths(address, args_string, analyze=False):
                 elif file.endswith(".index"):
                     models_index.append(os.path.join(model_folder, file))
     
-            output_files.append(paths[i + 1])
+            output_file_path = paths[i + 1]
+            output_files.append(output_file_path)
     
         input_files = [input_file] * len(models)
     
@@ -113,6 +114,15 @@ def set_all_paths(address, args_string, analyze=False):
             # Check if the destination index file exists, if not, copy the original index file to it
             if not os.path.exists(destination_index_file_path):
                 shutil.copy(models_index[idx], destination_index_file_path)
+
+            # Extract the folder path from the output_file
+            output_folder = os.path.dirname(output_files[idx])
+            # Check if the folder path is not empty and exists
+            if output_folder and not os.path.exists(output_folder):
+                os.makedirs(output_folder)
+
+            # Copy the output file to the folder specified in its path
+            shutil.copy(output_files[idx], output_folder)
     
             # Create a dummy args object for the send_to_rvc function
             osc_command = argparse.Namespace()
@@ -138,6 +148,7 @@ def set_all_paths(address, args_string, analyze=False):
 
     except IndexError:
         print("Incorrect sequence of arguments received. Expecting input_path, followed by alternating model_folder and output_path.")
+
 
 
 def run_osc_server(args):
