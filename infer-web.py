@@ -3079,10 +3079,27 @@ with gr.Blocks(theme=gr.themes.Soft(), title="Mangio-RVC-Web 💻") as app:
     # with gr.TabItem(i18n("点击查看交流、问题反馈群号")):
     #     gr.Markdown(value=i18n("xxxxx"))
 
-    if (
-        config.iscolab or config.paperspace
-    ):  # Share gradio link for colab and paperspace (FORK FEATURE)
-        app.queue(concurrency_count=511, max_size=1022).launch(share=True)
+    # if (
+    #     config.iscolab or config.paperspace
+    # ):  # Share gradio link for colab and paperspace (FORK FEATURE)
+    #     app.queue(concurrency_count=511, max_size=1022).launch(share=True)
+    # else:
+    #     app.queue(concurrency_count=511, max_size=1022).launch(
+    #         server_name="0.0.0.0",
+    #         inbrowser=not config.noautoopen,
+    #         server_port=config.listen_port,
+    #         quiet=False,
+    #     )
+
+    if config.iscolab or config.paperspace:
+        if config.is_cli:
+            print("\n\nMangio-RVC-Fork v2 CLI App!\n")
+            print(
+                "Welcome to the CLI version of RVC. Please read the documentation on https://github.com/Mangio621/Mangio-RVC-Fork (README.MD) to understand how to use this app.\n"
+            )
+            cli_navigation_loop()
+        else:
+            app.queue(concurrency_count=511, max_size=1022).launch(share=True)
     else:
         app.queue(concurrency_count=511, max_size=1022).launch(
             server_name="0.0.0.0",
