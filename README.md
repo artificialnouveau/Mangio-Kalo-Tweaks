@@ -288,7 +288,45 @@ If you are using Windows, you can download and extract `RVC-beta.7z` to use RVC 
 
 There's also a tutorial on RVC in Chinese and you can check it out if needed.
 
+# Common Error:
 
+If you get this error:
+Traceback (most recent call last):
+  File "infer-web.py", line 28, in <module>
+    import gradio as gr
+  File "C:\Users\...\gradio\__init__.py", line 3, in <module>
+    import gradio.components as components
+  File "C:\Users\...\gradio\components.py", line 33, in <module>
+    from ffmpy import FFmpeg
+ImportError: cannot import name 'FFmpeg' from 'ffmpy' (C:\Users\...\ffmpy\__init__.py)
+
+Try to run this:
+```
+pip uninstall ffmpy
+pip install ffmpy
+```
+
+or reinstall ffmpeg and connect the bin to the path 
+
+For MacOS:
+
+    You can install ffmpeg using Homebrew:
+
+```
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+    brew install ffmpeg
+```
+    Once installed, ffmpeg should already be available in your terminal, as Homebrew automatically links the binaries to /usr/local/bin, which should be in your PATH.
+
+For Linux (Ubuntu/Debian):
+
+    You can install ffmpeg using apt:
+```
+sudo apt update
+sudo apt install ffmpeg
+```
+
+Once installed, ffmpeg should be available globally in your terminal.
 ---
 
 # Voice Conversion CLI Application
