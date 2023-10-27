@@ -326,6 +326,14 @@ sudo apt update
 sudo apt install ffmpeg
 ```
 
+For Windows
+
+Download ffmpeg: https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip
+then run
+```
+setx /M PATH "%PATH%;C:\path\to\ffmpeg\bin"
+```
+
 Once installed, ffmpeg should be available globally in your terminal.
 ---
 
