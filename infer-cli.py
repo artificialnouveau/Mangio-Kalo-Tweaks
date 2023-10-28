@@ -237,15 +237,18 @@ def send_to_rvc(args):
             rvc_process.stdin.flush()
             logger.info("Command sent.")
     
-            # Optionally: Wait and read the output, if required
+            # Wait for "INFER:" prompt again before returning, ensuring RVC is ready for the next command
             while True:
                 line = rvc_process.stdout.readline()
-                if "some expected output line" in line:  # Replace with actual expected end line if any
+                print(line, end='')  # Optional: print the RVC output
+                if "INFER:" in line:
+                    print("RVC is ready for the next command.")
                     break
     except Exception as e:
         logger.error(f"An error occurred: {e}")
         traceback.print_exc()
     logger.info("Finished send_to_rvc function.")
+
 
 
 def start_rvc_process_threaded():
